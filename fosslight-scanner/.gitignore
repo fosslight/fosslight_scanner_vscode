@@ -1,0 +1,15 @@
+node_modules
+dist
+out
+*.log*
+
+# IDE
+.idea
+.vscode
+
+# OS
+.DS_Store
+
+# Python Virtual Environment
+venv
+.venv
