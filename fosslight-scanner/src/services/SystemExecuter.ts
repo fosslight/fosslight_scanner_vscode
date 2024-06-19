@@ -1,19 +1,17 @@
-import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 import * as util from "util";
 import { exec, spawn, ChildProcess } from "child_process";
-import { Readable } from "stream";
 
 class SystemExecuter {
   private static instance: SystemExecuter;
   private readonly venvPath = path.join(__dirname, "resources", "venv");
   private readonly pythonPath =
-    process.platform == "win32"
+    process.platform === "win32"
       ? path.join(this.venvPath, "Scripts", "python.exe")
       : path.join(this.venvPath, "bin", "python");
   private readonly activatePath =
-    process.platform == "win32"
+    process.platform === "win32"
       ? path.join(this.venvPath, "Scripts", "activate.bat")
       : path.join(this.venvPath, "bin", "activate");
   private logHandlers: ((data: any) => void)[] = [];
@@ -26,14 +24,6 @@ class SystemExecuter {
       SystemExecuter.instance = new SystemExecuter();
     }
     return SystemExecuter.instance;
-  }
-
-  public checkVenv(): boolean {
-    return (
-      fs.existsSync(this.venvPath) &&
-      fs.existsSync(this.pythonPath) &&
-      fs.existsSync(this.activatePath)
-    );
   }
 
   public async setUpVenv() {
@@ -55,7 +45,15 @@ class SystemExecuter {
     clearInterval(progressInterval); // stop printing '.'
   }
 
-  public async executeSetVenv(arg: string | undefined): Promise<boolean> {
+  private checkVenv(): boolean {
+    return (
+      fs.existsSync(this.venvPath) &&
+      fs.existsSync(this.pythonPath) &&
+      fs.existsSync(this.activatePath)
+    );
+  }
+
+  private async executeSetVenv(arg: string | undefined): Promise<boolean> {
     const execPromise = util.promisify(exec);
     try {
       if (arg) {
@@ -154,8 +152,11 @@ class SystemExecuter {
             )}"`;
 
       args.forEach((arg) => {
-        if (arg.startsWith("-p")) path = arg.replace("-p ", "");
-        else if (arg.startsWith("-w")) path = arg.replace("-w ", "");
+        if (arg.startsWith("-p")) {
+          path = arg.replace("-p ", "");
+        } else if (arg.startsWith("-w")) {
+          path = arg.replace("-w ", "");
+        }
       });
 
       console.log(`shellCommand: ${shellCommand}`);
@@ -189,7 +190,7 @@ class SystemExecuter {
   public forceQuit() {
     if (this.child) {
       try {
-        process.platform == "win32"
+        process.platform === "win32"
           ? exec(`taskkill /pid ${this.child.pid} /T /F`)
           : exec(`kill -9 ${this.child.pid}`);
       } catch (error) {

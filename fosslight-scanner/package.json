@@ -14,11 +14,11 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.analyzeRootDirectory",
+        "command": "fosslight-scanner.analyzeRootDirectory",
         "title": "Analyze Root Directory"
       },
       {
-        "command": "extension.analyzeCurrentFile",
+        "command": "fosslight-scanner.analyzeCurrentFile",
         "title": "Analyze Current File"
       }
     ]
