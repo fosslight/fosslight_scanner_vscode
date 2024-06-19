@@ -1,25 +1,50 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
+import SystemExecuter from "./services/SystemExecuter";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  const systemExecuter = SystemExecuter.getInstance();
+  systemExecuter.setUpVenv();
+  console.log(
+    'Congratulations, your extension "fosslight-scanner-extension" is now active!'
+  );
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "fosslight-scanner" is now active!');
+  // Command to run the scanner on the root directory of the project
+  const analyzeRootDirectory = vscode.commands.registerCommand(
+    "extension.analyzeRootDirectory",
+    async () => {
+      const workspaceFolders = vscode.workspace.workspaceFolders;
+      if (!workspaceFolders) {
+        vscode.window.showErrorMessage("No workspace folder open.");
+        return;
+      }
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('fosslight-scanner.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from FOSSLight Scanner!');
-	});
+      const folderPath = workspaceFolders[0].uri.fsPath;
+      const command = `${systemExecuter.pythonPath} -m fosslight -A -p ${folderPath} -f yaml -o ${folderPath}/fosslight_output`;
+      await systemExecuter.executeCommand(command);
+    }
+  );
 
-	context.subscriptions.push(disposable);
+  // Command to run the scanner on the currently opened file in the editor
+  const analyzeCurrentFile = vscode.commands.registerCommand(
+    "extension.analyzeCurrentFile",
+    async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showErrorMessage("No file open.");
+        return;
+      }
+
+      const filePath = editor.document.uri.fsPath;
+      const command = `${systemExecuter.pythonPath} -m fosslight -A -p ${filePath}`;
+      await systemExecuter.executeCommand(command);
+    }
+  );
+
+  context.subscriptions.push(analyzeRootDirectory, analyzeCurrentFile);
 }
 
 // This method is called when your extension is deactivated
