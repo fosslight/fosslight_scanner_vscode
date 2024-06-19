@@ -1,15 +1,28 @@
-node_modules
-dist
-out
-*.log*
+# Ignore node_modules directory
+node_modules/
 
-# IDE
-.idea
-.vscode
+# Ignore built extension files
+out/
+dist/
 
-# OS
+# Ignore temporary files
+.vscode/
+.vs/
+
+# Ignore user-specific settings
+.settings/
+
+# Ignore logs
+*.log
+
+# Ignore editor-specific files
+*.sublime-project
+*.sublime-workspace
+*.idea/
+*.vscode/
+*.swp
+*.swo
+
+# Ignore OS-specific files
 .DS_Store
-
-# Python Virtual Environment
-venv
-.venv
+Thumbs.db

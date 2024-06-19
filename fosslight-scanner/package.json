@@ -1,7 +1,7 @@
 {
   "name": "fosslight-scanner",
   "displayName": "FOSSLight Scanner",
-  "description": "Opensource compliance analyzer",
+  "description": "A VSCode Extension to run FOSSLight Scanner",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.90.0"
@@ -10,20 +10,27 @@
     "Other"
   ],
   "activationEvents": [],
-  "main": "./out/extension.js",
+  "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "fosslight-scanner.helloWorld",
-        "title": "Hello World"
+        "command": "extension.analyzeRootDirectory",
+        "title": "Analyze Root Directory"
+      },
+      {
+        "command": "extension.analyzeCurrentFile",
+        "title": "Analyze Current File"
       }
     ]
   },
   "scripts": {
-    "vscode:prepublish": "yarn run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "yarn run compile && yarn run lint",
+    "vscode:prepublish": "yarn run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "yarn run compile-tests && yarn run compile && yarn run lint",
     "lint": "eslint src --ext ts",
     "test": "vscode-test"
   },
@@ -35,6 +42,9 @@
     "@typescript-eslint/parser": "^7.11.0",
     "eslint": "^8.57.0",
     "typescript": "^5.4.5",
+    "ts-loader": "^9.5.1",
+    "webpack": "^5.92.0",
+    "webpack-cli": "^5.1.4",
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.4.0"
   }
