@@ -92,6 +92,11 @@ class SystemExecuter {
   }
 
   public async executeScanner(args: string[][]): Promise<CommandResponse> {
+    if (!this.checkVenv()) {
+      console.error(
+        "[Error]: Failed to run Fosslight Scanner.\n\t Please check the resources folder and files are in initial condition.\n\t Or try to reinstall this app."
+      );
+    }
     const mode: string = args[0].join(" ");
     const jobs: number =
       mode === "compare" ? 1 : args[1].length + args[2].length;
