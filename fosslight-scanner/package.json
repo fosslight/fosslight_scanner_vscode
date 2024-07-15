@@ -1,8 +1,10 @@
 {
   "name": "fosslight-scanner",
   "displayName": "FOSSLight Scanner",
-  "description": "A VSCode Extension to run FOSSLight Scanner",
-  "version": "0.0.1",
+  "publisher": "lgopensource",
+  "description": "A VSCode Extension made for the convenient use of FOSSLight Scanner",
+  "icon": "foss_logo.png",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.90.0"
   },
