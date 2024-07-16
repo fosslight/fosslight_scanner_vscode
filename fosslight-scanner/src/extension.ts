@@ -27,7 +27,6 @@ export async function activate(context: vscode.ExtensionContext) {
         cancellable: false,
       },
       async (progress) => {
-        vscode.window.showInformationMessage("Analysis started.");
         const handleLog = (log: string) => {
           outputChannel.appendLine(removeAnsiEscapeCodes(log));
         };
@@ -35,8 +34,6 @@ export async function activate(context: vscode.ExtensionContext) {
         systemExecuter.onLog(handleLog);
         await systemExecuter.executeScanner(args);
         systemExecuter.offLog(handleLog);
-
-        vscode.window.showInformationMessage("Analysis completed.");
       }
     );
   };
@@ -116,6 +113,10 @@ export async function activate(context: vscode.ExtensionContext) {
       const rootDirPath = workspaceFolders[0].uri.fsPath;
       outputChannel.appendLine(`Analysis Subject: ${rootDirPath}\n`);
 
+      vscode.window.showInformationMessage(
+        "Analysis started on the root directory."
+      );
+
       const excelArgs = commandParser.parseCmd2Args({
         type: "analyze",
         config: {
@@ -141,6 +142,10 @@ export async function activate(context: vscode.ExtensionContext) {
       });
 
       await runFosslightScanner(yamlArgs);
+
+      vscode.window.showInformationMessage(
+        " Analysis completed on the root directory."
+      );
 
       const outputDirPath = path.join(rootDirPath, "fosslight_report");
       await printOutput(outputDirPath);
@@ -195,11 +200,19 @@ export async function activate(context: vscode.ExtensionContext) {
           },
         });
 
+        vscode.window.showInformationMessage(
+          "Analysis started on the current file."
+        );
+
         await runFosslightScanner(args);
 
         // Remove the temporary directory
         await fse.remove(tempDirPath);
         console.log("Removed temporary directory: ", tempDirPath);
+
+        vscode.window.showInformationMessage(
+          "Analysis completed on the current file."
+        );
 
         const outputDirPath = path.join(rootDirPath, "fosslight_report");
         await printOutput(outputDirPath);
