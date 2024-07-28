@@ -44,5 +44,5 @@ $ npm install -g vsce (only if needed)
 $ vsce login lgopensource
 ```
 
-4. Type the Azure personal access token in the terminal as instructed.
+4. Type the Azure personal access token in the terminal as instructed. : https://dev.azure.com/lgopensource/
 5. Type `vsce publish` and type `y` in for the two 'Do you want to continue?' questions.
