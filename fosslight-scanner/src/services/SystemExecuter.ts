@@ -1,7 +1,12 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as util from "util";
+import * as vscode from "vscode";
 import { exec, spawn, ChildProcess } from "child_process";
+
+interface SystemExecuterProps {
+  outputChannel: vscode.OutputChannel;
+}
 
 class SystemExecuter {
   private static instance: SystemExecuter;
@@ -16,21 +21,32 @@ class SystemExecuter {
       : path.join(this.venvPath, "bin", "activate");
   private logHandlers: ((data: any) => void)[] = [];
   private child: ChildProcess | null = null;
+  private outputChannel: vscode.OutputChannel;
 
-  private constructor() {}
+  private constructor({ outputChannel }: SystemExecuterProps) {
+    this.outputChannel = outputChannel;
+  }
 
-  public static getInstance(): SystemExecuter {
+  public static getInstance({
+    outputChannel,
+  }: {
+    outputChannel: vscode.OutputChannel;
+  }): SystemExecuter {
     if (!SystemExecuter.instance) {
-      SystemExecuter.instance = new SystemExecuter();
+      SystemExecuter.instance = new SystemExecuter({ outputChannel });
     }
     return SystemExecuter.instance;
   }
 
   public async setUpVenv() {
     const arg = !this.checkVenv() ? "false" : undefined; // assign any string is fine
-    console.log("Waiting for setting venv and Fosslight Scanner");
+    this.outputChannel.clear();
+    this.outputChannel.show();
+    this.outputChannel.appendLine(
+      "Waiting for setting venv and Fosslight Scanner"
+    );
     const progressInterval = setInterval(() => {
-      process.stdout.write(".");
+      this.outputChannel.append(".");
     }, 500); // print '.' every 500ms while setting
 
     // Will take a long time (about 3 min) when the first install the venv and fs.
@@ -40,7 +56,7 @@ class SystemExecuter {
         "[Error]: Failed to set venv and install Fosslight Scanner.\n\t Please check the resources folder and files are in initial condition.\n\t Or try to reinstall this app."
       );
     } else {
-      console.log("Fosslight Scanner is ready to use.");
+      this.outputChannel.appendLine("Fosslight Scanner is ready to use.");
     }
     clearInterval(progressInterval); // stop printing '.'
   }
