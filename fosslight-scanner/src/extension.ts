@@ -13,7 +13,7 @@ import { removeAnsiEscapeCodes } from "./utils/parseLog";
 let outputChannel = vscode.window.createOutputChannel("Fosslight Scanner");
 
 export async function activate(context: vscode.ExtensionContext) {
-  const systemExecuter = SystemExecuter.getInstance();
+  const systemExecuter = SystemExecuter.getInstance({ outputChannel });
   await systemExecuter.setUpVenv();
   console.log(
     'Congratulations, your extension "fosslight-scanner-extension" is now active!'
@@ -26,8 +26,7 @@ export async function activate(context: vscode.ExtensionContext) {
         title: "Running Fosslight Scanner...",
         cancellable: false,
       },
-      async (progress) => {
-        vscode.window.showInformationMessage("Analysis started.");
+      async (_) => {
         const handleLog = (log: string) => {
           outputChannel.appendLine(removeAnsiEscapeCodes(log));
         };
@@ -35,24 +34,27 @@ export async function activate(context: vscode.ExtensionContext) {
         systemExecuter.onLog(handleLog);
         await systemExecuter.executeScanner(args);
         systemExecuter.offLog(handleLog);
-
-        vscode.window.showInformationMessage("Analysis completed.");
       }
     );
   };
 
   const printOutput = async (outputDirPath: string) => {
-    const outputFilePath = (
-      await findFiles(outputDirPath, /fosslight_report_all_\d{6}_\d{4}\.yaml/)
-    ).sort((a, b) => b.localeCompare(a))[0];
+    const filePaths = await findFilePaths(
+      outputDirPath,
+      /fosslight_report_all_\d{6}_\d{4}\.yaml/
+    );
+    const outputFilePath = filePaths.sort((a, b) => b.localeCompare(a))[0];
     console.log("Found the latest report file: ", outputFilePath);
     const output = fs.readFileSync(outputFilePath, "utf8");
     outputChannel.appendLine("Analysis result:\n");
     outputChannel.appendLine(output);
   };
 
-  const findFiles = async (dir: string, regex: RegExp): Promise<string[]> => {
-    let files: string[] = [];
+  const findFilePaths = async (
+    dir: string,
+    regex: RegExp
+  ): Promise<string[]> => {
+    let filePaths: string[] = [];
     const entries = await fse.readdir(dir);
 
     for (const entry of entries) {
@@ -60,17 +62,17 @@ export async function activate(context: vscode.ExtensionContext) {
       const stat = await fse.stat(entryPath);
 
       if (stat.isDirectory()) {
-        files = files.concat(await findFiles(entryPath, regex));
+        filePaths = filePaths.concat(await findFilePaths(entryPath, regex));
       } else if (path.basename(entry).match(regex)) {
-        files.push(entryPath);
+        filePaths.push(entryPath);
       }
     }
 
-    return files;
+    return filePaths;
   };
 
   const runCompareModeIfSbomExists = async (folderPath: string) => {
-    const sbomFiles = await findFiles(folderPath, /sbom-info.yaml/);
+    const sbomFiles = await findFilePaths(folderPath, /sbom-info.yaml/);
     if (sbomFiles.length > 0) {
       for (const sbomFilePath of sbomFiles) {
         console.log(
@@ -116,6 +118,10 @@ export async function activate(context: vscode.ExtensionContext) {
       const rootDirPath = workspaceFolders[0].uri.fsPath;
       outputChannel.appendLine(`Analysis Subject: ${rootDirPath}\n`);
 
+      vscode.window.showInformationMessage(
+        "Analysis started on the root directory."
+      );
+
       const excelArgs = commandParser.parseCmd2Args({
         type: "analyze",
         config: {
@@ -141,6 +147,10 @@ export async function activate(context: vscode.ExtensionContext) {
       });
 
       await runFosslightScanner(yamlArgs);
+
+      vscode.window.showInformationMessage(
+        "Analysis completed on the root directory."
+      );
 
       const outputDirPath = path.join(rootDirPath, "fosslight_report");
       await printOutput(outputDirPath);
@@ -172,16 +182,12 @@ export async function activate(context: vscode.ExtensionContext) {
       const tempFilePath = path.join(tempDirPath, path.basename(filePath));
 
       try {
-        if (await fse.exists(tempDirPath)) {
-          throw new Error("Temporary directory './.temp' already exists.");
-        }
         // Create the temporary directory
         await fse.emptyDir(tempDirPath);
 
         // Copy the current file to the temporary directory
         await fse.copy(filePath, tempFilePath);
 
-        console.log("Copied file to temporary directory: ", tempFilePath);
         outputChannel.appendLine(`Analysis Subject: ${filePath}\n`);
 
         const args = commandParser.parseCmd2Args({
@@ -195,11 +201,19 @@ export async function activate(context: vscode.ExtensionContext) {
           },
         });
 
+        vscode.window.showInformationMessage(
+          "Analysis started on the current file."
+        );
+
         await runFosslightScanner(args);
 
         // Remove the temporary directory
         await fse.remove(tempDirPath);
         console.log("Removed temporary directory: ", tempDirPath);
+
+        vscode.window.showInformationMessage(
+          "Analysis completed on the current file."
+        );
 
         const outputDirPath = path.join(rootDirPath, "fosslight_report");
         await printOutput(outputDirPath);
