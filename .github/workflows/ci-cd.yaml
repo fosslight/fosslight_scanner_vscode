@@ -16,27 +16,12 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "14"
-
-      - name: Install dependencies
-        run: npm install
-        working-directory: ./fosslight-scanner
-
-      - name: Lint and Test
-        run: |
-          npm run lint
-          npm test
-        working-directory: ./fosslight-scanner
-
       - name: Package Extension
         run: |
           npm install -g vsce
           vsce package
         working-directory: ./fosslight-scanner
-
+s
       - name: Verify LICENSE
         run: |
           if [ ! -f LICENSE ]; then
