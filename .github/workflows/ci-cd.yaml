@@ -8,30 +8,40 @@ on:
     tags:
       - "v*.*.*"
 
+{ secrets.VSCE_PAT }}
+        run: vsce publish
+        working-directory: ./fosslight-scanner
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the code
-        uses: actions/checkout@v3
+    - name: Checkout the code
+      uses: actions/checkout@v3
 
-      - name: Package Extension
-        run: |
-          npm install -g vsce
-          vsce package
-        working-directory: ./fosslight-scanner
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
 
-      - name: Verify LICENSE
-        run: |
-          if [ ! -f LICENSE ]; then
-            echo "LICENSE file not found!"
-            exit 1
-          fi
-        working-directory: ./fosslight-scanner
+    - name: Install dependencies
+      run: npm install
+      working-directory: ./fosslight-scanner
 
-      - name: Publish Extension
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: vsce publish
-        working-directory: ./fosslight-scanner
+    - name: Compile the extension
+      run: yarn compile
+      working-directory: ./fosslight-scanner
+
+    - name: Install vsce
+      run: npm install -g @vscode/vsce
+
+    - name: Authenticate with vsce
+      env:
+        VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      run: vsce login lgopensource --pat $VSCE_PAT
+
+    - name: Package and publish the extension
+      run: |
+        vsce package
+        vsce publish -y
+      working-directory: ./fosslight-scanner
