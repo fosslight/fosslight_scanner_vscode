@@ -33,9 +33,9 @@ jobs:
         run: npm install -g @vscode/vsce
 
       - name: Package and publish the extension
-      env:
-        VSCE_PAT: ${{ secrets.VSCE_PAT }}
-      run: |
-        vsce package
-        vsce publish -y
-      working-directory: ./fosslight-scanner
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          vsce package
+          vsce publish -y
+        working-directory: ./fosslight-scanner
