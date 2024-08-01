@@ -32,13 +32,10 @@ jobs:
       - name: Install vsce
         run: npm install -g @vscode/vsce
 
-      - name: Authenticate with vsce
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: vsce login lgopensource --pat $VSCE_PAT
-
       - name: Package and publish the extension
-        run: |
-          vsce package
-          vsce publish -y
-        working-directory: ./fosslight-scanner
+      env:
+        VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      run: |
+        vsce package
+        vsce publish -y
+      working-directory: ./fosslight-scanner
