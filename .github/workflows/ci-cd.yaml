@@ -29,9 +29,6 @@ jobs:
         run: yarn compile
         working-directory: ./fosslight-scanner
 
-      - name: Install vsce
-        run: npm install -g @vscode/vsce
-
       - name: Package the extension
         run: |
           vsce package --allow-missing-repository
