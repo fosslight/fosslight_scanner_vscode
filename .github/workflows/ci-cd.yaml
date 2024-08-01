@@ -29,19 +29,19 @@ jobs:
         run: yarn compile
         working-directory: ./fosslight-scanner
 
-- name: Install vsce
-      run: npm install -g @vscode/vsce
+      - name: Install vsce
+        run: npm install -g @vscode/vsce
 
-    - name: Package the extension
-      env:
-        VSCE_PAT: ${{ secrets.VSCE_PAT }}
-      run: |
-        vsce package --allow-missing-repository
-      working-directory: ./fosslight-scanner
+      - name: Package the extension
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          vsce package --allow-missing-repository
+        working-directory: ./fosslight-scanner
 
-    - name: Publish the extension
-      env:
-        VSCE_PAT: ${{ secrets.VSCE_PAT }}
-      run: |
-        echo $VSCE_PAT | vsce publish --pat $VSCE_PAT
-      working-directory: ./fosslight-scanner
+      - name: Publish the extension
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          echo $VSCE_PAT | vsce publish --pat $VSCE_PAT
+        working-directory: ./fosslight-scanner
