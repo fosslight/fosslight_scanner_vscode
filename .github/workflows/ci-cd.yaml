@@ -23,16 +23,19 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: ./fosslight-scanner
 
       - name: Lint and Test
         run: |
           npm run lint
           npm test
+        working-directory: ./fosslight-scanner
 
       - name: Package Extension
         run: |
           npm install -g vsce
           vsce package
+        working-directory: ./fosslight-scanner
 
       - name: Verify LICENSE
         run: |
@@ -40,8 +43,10 @@ jobs:
             echo "LICENSE file not found!"
             exit 1
           fi
+        working-directory: ./fosslight-scanner
 
       - name: Publish Extension
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: vsce publish
+        working-directory: ./fosslight-scanner
