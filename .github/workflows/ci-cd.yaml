@@ -21,7 +21,7 @@ jobs:
           npm install -g vsce
           vsce package
         working-directory: ./fosslight-scanner
-s
+
       - name: Verify LICENSE
         run: |
           if [ ! -f LICENSE ]; then
