@@ -10,7 +10,7 @@
   "publisher": "lgopensource",
   "description": "A VSCode Extension made for the convenient use of FOSSLight Scanner",
   "icon": "foss_logo.png",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.90.0"
   },
