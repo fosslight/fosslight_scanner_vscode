@@ -42,8 +42,11 @@ jobs:
         git commit -m "Update version to ${{ env.VERSION }}"
 
     - name: Push changes
-      run: git push origin HEAD:main
-      
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.TOKEN }}
+        branch: main
+        
     - name: Install vsce
       working-directory: ./fosslight-scanner
       run: npm install -g vsce
