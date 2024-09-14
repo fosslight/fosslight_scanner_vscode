@@ -16,13 +16,6 @@ This extension enhances user convenience by enabling key functionalities of the 
 2. (Only for windows) Install Microsoft Build Tools (Microsoft Visual C++ 14.0+) from https://visualstudio.microsoft.com/ko/visual-cpp-build-tools/
 
 
-## Release Notes
-
-### 1.0.0
-
-Initial release of FOSSLight Scanner VSCode extension.
-
-
 ## For more information
 
 * [FOSSLight Scanner Official Website](https://fosslight.org)
