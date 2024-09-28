@@ -29,6 +29,18 @@
         "command": "fosslight-scanner.analyzeCurrentFile",
         "title": "Analyze Current File"
       }
+    ],
+    "keybindings": [
+      {
+        "command": "fosslight-scanner.analyzeRootDirectory",
+        "key": "ctrl+shift+r",
+        "when": "editorFocus"
+      },
+      {
+        "command": "fosslight-scanner.analyzeCurrentFile",
+        "key": "ctrl+shift+c",
+        "when": "editorFocus && !terminalFocus"
+      }
     ]
   },
   "scripts": {
