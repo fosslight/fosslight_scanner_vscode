@@ -34,12 +34,12 @@
       {
         "command": "fosslight-scanner.analyzeRootDirectory",
         "key": "ctrl+shift+r",
-        "when": "editorTextFocus"
+        "when": "editorFocus"
       },
       {
         "command": "fosslight-scanner.analyzeCurrentFile",
         "key": "ctrl+shift+c",
-        "when": "editorTextFocus"
+        "when": "editorFocus && !terminalFocus"
       }
     ]
   },
